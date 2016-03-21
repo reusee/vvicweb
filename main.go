@@ -14,5 +14,7 @@ func main() {
 	handler.Register(new(Api))
 	http.Handle("/api/", handler)
 
+	http.HandleFunc("/download/", downloadHandler)
+
 	ce(http.ListenAndServe(":7899", nil), "listen and serve")
 }

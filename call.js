@@ -1,6 +1,6 @@
 import req from 'reqwest'
 
-let apiEndpoint = '';
+let apiEndpoint = 'http://192.168.1.28:7899/api';
 
 export function call(what, data, cb, retry = 5) {
   req({
@@ -8,7 +8,6 @@ export function call(what, data, cb, retry = 5) {
     url: apiEndpoint + '/' + what,
     type: 'json',
     method: 'post',
-    withCredentials: true,
     data: JSON.stringify(data),
     success: (resp) => {
       cb(resp);
