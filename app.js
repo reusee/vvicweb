@@ -17,4 +17,4 @@ app.bind(document.getElementById('app'));
 let store = new Store(initState);
 store.setComponent(app);
 
-export let emit = store.emit;
+export let emit = store.emit.bind(store);
