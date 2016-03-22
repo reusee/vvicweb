@@ -16,7 +16,6 @@ import (
 
 func downloadHandler(w http.ResponseWriter, r *http.Request) {
 	id := strings.Split(r.URL.Path, "/")[2]
-	pt("%s\n", id)
 	pagePath := fmt.Sprintf("http://www.vvic.com/api/item/%s", id)
 	resp, err := http.Get(pagePath)
 	ce(err, "get")
@@ -43,6 +42,9 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 			imgPath = "http:" + imgPath
 		}
 		pt("%s\n", imgPath)
+		if !strings.HasPrefix(imgPath, "http") {
+			continue
+		}
 
 		header := new(zip.FileHeader)
 		header.Name = fmt.Sprintf("%s-a-%04d%s", id, i,
@@ -61,6 +63,9 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 	doc.Find("img").Each(func(i int, se *goquery.Selection) {
 		imgSrc, _ := se.Attr("src")
 		pt("%s\n", imgSrc)
+		if !strings.HasPrefix(imgSrc, "http") {
+			return
+		}
 
 		header := new(zip.FileHeader)
 		header.Name = fmt.Sprintf("%s-b-%04d%s", id, i,

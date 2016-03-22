@@ -1,6 +1,6 @@
 import req from 'reqwest'
 
-let apiEndpoint = 'http://192.168.1.28:7899/api';
+let apiEndpoint = 'http://127.0.0.1:7899/api';
 
 export function call(what, data, cb, retry = 5) {
   req({

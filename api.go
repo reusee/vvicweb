@@ -50,6 +50,7 @@ type GetInfoResp struct {
 
 func (a *Api) GetInfo(req *GetInfoReq, resp *GetInfoResp) (err error) {
 	defer ct(&err)
+	pt("get info of %d\n", req.Id)
 	pagePath := fmt.Sprintf("http://www.vvic.com/api/item/%d", req.Id)
 	httpResp, err := http.Get(pagePath)
 	ce(err, "get")

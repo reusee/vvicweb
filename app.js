@@ -78,7 +78,7 @@ class Info extends Component {
         },
       }, [
         e('a', {
-          href: 'http://192.168.1.28:7899/download/' + state.Id,
+          href: 'http://127.0.0.1:7899/download/' + state.Id,
         }, '下载图包'),
       ]),
       // 属性
