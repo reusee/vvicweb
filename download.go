@@ -6,12 +6,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"path"
 	"strings"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/reusee/vviccommon"
 )
 
 func downloadHandler(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +57,12 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 		resp, err := http.Get(imgPath)
 		ce(err, "get image")
 		defer resp.Body.Close()
-		io.Copy(writer, resp.Body)
+		body, err := ioutil.ReadAll(resp.Body)
+		ce(err, "read body")
+		err = vviccommon.CompositeLogo(bytes.NewReader(body), writer)
+		if err != nil {
+			writer.Write(body)
+		}
 	}
 
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(data.Data.Desc))

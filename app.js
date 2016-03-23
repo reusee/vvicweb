@@ -29,12 +29,6 @@ class Control extends Component {
           onclick: () => {
             document.getElementById('good-number').select();
           },
-          onchange: () => {
-            let id = parseInt(document.getElementById('good-number').value);
-            if (id) {
-              emit(ev_get_info, id);
-            }
-          },
         }),
       ]),
       button({
