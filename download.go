@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"path"
@@ -83,7 +82,12 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 		resp, err := http.Get(imgSrc)
 		ce(err, "get image")
 		defer resp.Body.Close()
-		io.Copy(writer, resp.Body)
+		body, err := ioutil.ReadAll(resp.Body)
+		ce(err, "read body")
+		err = vviccommon.CompositeWatermark(bytes.NewReader(body), writer)
+		if err != nil {
+			writer.Write(body)
+		}
 	})
 
 	archive.Close()

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/reusee/vviccommon"
 )
 
 type Api struct {
@@ -108,7 +109,7 @@ func (a *Api) GetInfo(req *GetInfoReq, resp *GetInfoResp) (err error) {
 		resp.DetailImages = append(resp.DetailImages, imgSrc)
 	})
 
-	resp.Title = data.Data.Title
+	resp.Title = vviccommon.TidyTitle(data.Data.Title)
 	resp.Price = data.Data.Discount_price
 	resp.Id = data.Data.Id
 

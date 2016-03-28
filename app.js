@@ -56,14 +56,19 @@ let image_style = {
 
 class Info extends Component {
   render(state) {
+    let price = parseFloat(state.Price);
     return div({}, [
       // 标题等
       div({
         style: {...section_style,
         },
       }, [
-        div({}, state.Title),
-        div({}, '￥' + state.Price),
+        div({}, '梦丹铃 2016' + state.Title),
+        div({}, '拿货价格：￥' + state.Price),
+        div({}, [
+          '最高成本：￥',
+          price + 18 + (price * 0.08) + 13 + (price * 0.002),
+        ]),
         div({}, '货号：' + state.Id),
       ]),
       // 下载
