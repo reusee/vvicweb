@@ -67,7 +67,12 @@ class Info extends Component {
         div({}, '拿货价格：￥' + state.Price),
         div({}, [
           '最高成本：￥',
-          price + 18 + (price * 0.08) + 13 + (price * 0.002),
+          price // 拿货价
+          + 22 // 最远地区运费
+          + (price * 0.08) // 京东扣点
+          // 退货损失平摊，算30%退货率
+          + (22 * 1.5 * 3 / 7)
+          + (price * 0.002), // 京豆
         ]),
         div({}, '货号：' + state.Id),
       ]),

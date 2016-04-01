@@ -46,7 +46,6 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 		if !strings.HasPrefix(imgPath, "http") {
 			continue
 		}
-
 		header := new(zip.FileHeader)
 		header.Name = fmt.Sprintf("%s-a-%04d%s", id, i,
 			path.Ext(imgPath))
@@ -59,9 +58,7 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(resp.Body)
 		ce(err, "read body")
 		err = vviccommon.CompositeLogo(bytes.NewReader(body), writer)
-		if err != nil {
-			writer.Write(body)
-		}
+		ce(err, "composite logo")
 	}
 
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(data.Data.Desc))
@@ -72,7 +69,6 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 		if !strings.HasPrefix(imgSrc, "http") {
 			return
 		}
-
 		header := new(zip.FileHeader)
 		header.Name = fmt.Sprintf("%s-b-%04d%s", id, i,
 			path.Ext(imgSrc))
@@ -84,10 +80,10 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
 		ce(err, "read body")
-		err = vviccommon.CompositeWatermark(bytes.NewReader(body), writer)
-		if err != nil {
-			writer.Write(body)
-		}
+		_, err = writer.Write(body)
+		ce(err, "write")
+		//err = vviccommon.CompositeWatermark(bytes.NewReader(body), writer)
+		//ce(err, "composite watermark")
 	})
 
 	archive.Close()
