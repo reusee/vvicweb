@@ -46,19 +46,31 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 		if !strings.HasPrefix(imgPath, "http") {
 			continue
 		}
-		header := new(zip.FileHeader)
-		header.Name = fmt.Sprintf("%s-a-%04d%s", id, i,
-			path.Ext(imgPath))
-		header.Method = zip.Deflate
-		writer, err := archive.CreateHeader(header)
-		ce(err, "CreateHeader")
+
 		resp, err := http.Get(imgPath)
 		ce(err, "get image")
 		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
 		ce(err, "read body")
+
+		header := new(zip.FileHeader)
+		header.Name = fmt.Sprintf("a-%s-%04d%s", id, i,
+			path.Ext(imgPath))
+		header.Method = zip.Deflate
+		writer, err := archive.CreateHeader(header)
+		ce(err, "CreateHeader")
+		err = vviccommon.ScaleTo800x800(bytes.NewReader(body), writer)
+		ce(err, "scale to 800x800")
+
+		header = new(zip.FileHeader)
+		header.Name = fmt.Sprintf("b-%s-%04d%s", id, i,
+			path.Ext(imgPath))
+		header.Method = zip.Deflate
+		writer, err = archive.CreateHeader(header)
+		ce(err, "CreateHeader")
 		err = vviccommon.CompositeLogo(bytes.NewReader(body), writer)
 		ce(err, "composite logo")
+
 	}
 
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(data.Data.Desc))
@@ -69,21 +81,40 @@ func downloadHandler(w http.ResponseWriter, r *http.Request) {
 		if !strings.HasPrefix(imgSrc, "http") {
 			return
 		}
-		header := new(zip.FileHeader)
-		header.Name = fmt.Sprintf("%s-b-%04d%s", id, i,
-			path.Ext(imgSrc))
-		header.Method = zip.Deflate
-		writer, err := archive.CreateHeader(header)
-		ce(err, "CreateHeader")
+
 		resp, err := http.Get(imgSrc)
 		ce(err, "get image")
 		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
 		ce(err, "read body")
+
+		// origin image
+		header := new(zip.FileHeader)
+		header.Name = fmt.Sprintf("c-%s-%04d%s", id, i,
+			path.Ext(imgSrc))
+		header.Method = zip.Deflate
+		writer, err := archive.CreateHeader(header)
+		ce(err, "CreateHeader")
 		_, err = writer.Write(body)
 		ce(err, "write")
-		//err = vviccommon.CompositeWatermark(bytes.NewReader(body), writer)
-		//ce(err, "composite watermark")
+
+		// scaled image
+		header = new(zip.FileHeader)
+		header.Name = fmt.Sprintf("m-%s-%04d%s", id, i,
+			path.Ext(imgSrc))
+		header.Method = zip.Deflate
+		writer, err = archive.CreateHeader(header)
+		ce(err, "CreateHeader")
+		ce(vviccommon.ScaleForMobile(bytes.NewReader(body), writer), "scale")
+
+		// 770
+		header = new(zip.FileHeader)
+		header.Name = fmt.Sprintf("w-770px-%s-%04d.jpg", id, i)
+		header.Method = zip.Deflate
+		writer, err = archive.CreateHeader(header)
+		ce(err, "CreateHeader")
+		ce(vviccommon.ScaleImageToJpeg(770, 90, bytes.NewReader(body), writer), "scale to 770")
+
 	})
 
 	archive.Close()
